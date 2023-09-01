@@ -11,7 +11,7 @@ this is the repo for the flutterwave backend assessment given which was to have 
 To clone this repository, you can head over to [GitHub Repository](https://github.com/smartbizlord/flutterBackendAssessment). the major requirements for this API is shown below
 
 - NodeJS (npm)
-- MySQL | PostgreSQL | SQLite
+- MySQL
 - .env (Environment Variables)
 
 | Variable                              | Data Type | Allowed Values                       |
