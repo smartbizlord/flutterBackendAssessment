@@ -62,7 +62,7 @@ after the dependencies are installed, type `npm start` and visit the api from `h
 
 ### Note
 
-for anyone to be able to create a new account number they must be registered first and use their bearer token in the headers of the **/accounts/new** endpoint
+for anyone to be able to create a new account number they must be registered first and use their bearer token in the headers of the `/accounts/new` endpoint
 
 ### Author
 
