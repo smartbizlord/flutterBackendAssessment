@@ -1,11 +1,11 @@
-const httpStatus = require('http-status');
-const moment = require('moment');
-const tokenService = require('./token.service');
-const userService = require('./user.service');
-const { dB } = require('../models');
-const ApiError = require('../utils/ApiError');
-const { tokenTypes } = require('../config/tokens');
-const bcrypt = require('bcryptjs');
+const httpStatus = require("http-status");
+const moment = require("moment");
+const tokenService = require("./token.service");
+const userService = require("./user.service");
+const { dB } = require("../models");
+const ApiError = require("../utils/ApiError");
+const { tokenTypes } = require("../config/tokens");
+const bcrypt = require("bcryptjs");
 
 /**
  * Login with username and password
@@ -14,14 +14,21 @@ const bcrypt = require('bcryptjs');
  * @returns {Promise<User>}
  */
 const loginUserWithEmailAndPassword = async (email, password) => {
-  const user = await userService.getUserByEmail(email, ['firstName', 'lastName', 'email', 'profileImage', 'password'], ['createdAt', 'updatedAt']);
-  console.log(user, "User")
-  if (!user || !(await userService.isPasswordMatch(password, user.dataValues))) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
+  const user = await userService.getUserByEmail(
+    email,
+    ["firstName", "lastName", "email", "profileImage", "password"],
+    ["createdAt", "updatedAt"]
+  );
+  console.log(user, "User");
+  if (
+    !user ||
+    !(await userService.isPasswordMatch(password, user.dataValues))
+  ) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect email or password");
   }
   user.lastLogin = moment();
-  user.save()
-  user.password = undefined
+  user.save();
+  user.password = undefined;
   return user;
 };
 
@@ -31,9 +38,15 @@ const loginUserWithEmailAndPassword = async (email, password) => {
  * @returns {Promise}
  */
 const logout = async (refreshToken) => {
-  const refreshTokenDoc = await dB.tokens.findOne({ where: { token: refreshToken, type: tokenTypes.REFRESH, blacklisted: false } });
+  const refreshTokenDoc = await dB.tokens.findOne({
+    where: {
+      token: refreshToken,
+      type: tokenTypes.REFRESH,
+      blacklisted: false,
+    },
+  });
   if (!refreshTokenDoc) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Not found');
+    throw new ApiError(httpStatus.NOT_FOUND, "Not found");
   }
   await refreshTokenDoc.destroy();
 };
@@ -45,7 +58,10 @@ const logout = async (refreshToken) => {
  */
 const refreshAuth = async (refreshToken) => {
   try {
-    const refreshTokenDoc = await tokenService.verifyToken(refreshToken, tokenTypes.REFRESH);
+    const refreshTokenDoc = await tokenService.verifyToken(
+      refreshToken,
+      tokenTypes.REFRESH
+    );
     const user = await userService.getUserById(refreshTokenDoc.user);
     if (!user) {
       throw new Error();
@@ -53,7 +69,7 @@ const refreshAuth = async (refreshToken) => {
     await refreshTokenDoc.destroy();
     return tokenService.generateAuthTokens(user.id);
   } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate');
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate");
   }
 };
 
@@ -65,14 +81,19 @@ const refreshAuth = async (refreshToken) => {
  */
 const resetPassword = async (resetPasswordToken, newPassword) => {
   try {
-    const resetPasswordTokenDoc = await tokenService.verifyToken(resetPasswordToken, tokenTypes.RESET_PASSWORD);
+    const resetPasswordTokenDoc = await tokenService.verifyToken(
+      resetPasswordToken,
+      tokenTypes.RESET_PASSWORD
+    );
     const user = await userService.getUserById(resetPasswordTokenDoc.user);
     if (!user) {
       throw new Error();
     }
-    newPassword = bcrypt.hashSync(newPassword, 8)
+    newPassword = bcrypt.hashSync(newPassword, 8);
     await userService.updateUserById(user.id, { password: newPassword });
-    await dB.tokens.destroy({ where: { user: user.id, type: tokenTypes.RESET_PASSWORD } });
+    await dB.tokens.destroy({
+      where: { user: user.id, type: tokenTypes.RESET_PASSWORD },
+    });
   } catch (error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, error);
   }
@@ -85,23 +106,28 @@ const resetPassword = async (resetPasswordToken, newPassword) => {
  */
 const verifyEmail = async (verifyEmailToken) => {
   try {
-    const verifyEmailTokenDoc = await tokenService.verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL);
+    const verifyEmailTokenDoc = await tokenService.verifyToken(
+      verifyEmailToken,
+      tokenTypes.VERIFY_EMAIL
+    );
     const user = await userService.getUserById(verifyEmailTokenDoc.user);
     if (!user) {
       throw new Error();
     }
-    const customerCode = `2${Math.floor(Math.random() * 899999999) + 100000000}`;
+    const customerCode = `2${
+      Math.floor(Math.random() * 899999999) + 100000000
+    }`;
     const custumerAccount = await userService.createBankAccount(user);
-    await user.createAccount(custumerAccount)
-    await dB.tokens.destroy({ where: { user: user.id, type: tokenTypes.VERIFY_EMAIL } });
+    await user.createAccount(custumerAccount);
+    await dB.tokens.destroy({
+      where: { user: user.id, type: tokenTypes.VERIFY_EMAIL },
+    });
     await userService.updateUserById(user.id, { isEmailVerified: true });
     // await user.createWallet({customerCode})
   } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed');
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Email verification failed");
   }
 };
-
-
 
 module.exports = {
   loginUserWithEmailAndPassword,

@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "MovieApp",
+      "name": "flutterwaveBackend",
       "script": "bin/www",
       "instances": 1,
       "autorestart": true,

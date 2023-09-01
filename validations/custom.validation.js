@@ -7,30 +7,40 @@ const objectId = (value, helpers) => {
 
 const password = (value, helpers) => {
   if (value.length < 8) {
-    return helpers.message('password must be at least 8 characters');
+    return helpers.message("password must be at least 8 characters");
   }
   if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
-    return helpers.message('password must contain at least 1 letter and 1 number');
+    return helpers.message(
+      "password must contain at least 1 letter and 1 number"
+    );
   }
   return value;
 };
 
 const dateOfBirth = (value, helpers) => {
   if (value.length < 10 || value.length > 10) {
-    return helpers.message('Date of birth should follow format YYYY-MM-DD');
+    return helpers.message("Date of birth should follow format YYYY-MM-DD");
   }
-  const dobArr = value.split('-')
+  const dobArr = value.split("-");
   if (dobArr.length != 3) {
-    return helpers.message('Total - Date of birth should follow format YYYY-MM-DD');
+    return helpers.message(
+      "Total - Date of birth should follow format YYYY-MM-DD"
+    );
   }
-  if (dobArr[0]?.length != 4 || (Number(dobArr) < 1900)) {
-    return helpers.message('Year - Date of birth should follow format YYYY-MM-DD');
+  if (dobArr[0]?.length != 4 || Number(dobArr) < 1900) {
+    return helpers.message(
+      "Year - Date of birth should follow format YYYY-MM-DD"
+    );
   }
-  if (dobArr[1]?.length != 2 || (Number(dobArr) < 0)) {
-    return helpers.message('Month - Date of birth should follow format YYYY-MM-DD');
+  if (dobArr[1]?.length != 2 || Number(dobArr) < 0) {
+    return helpers.message(
+      "Month - Date of birth should follow format YYYY-MM-DD"
+    );
   }
-  if (dobArr[2]?.length != 2 || (Number(dobArr) < 0)) {
-    return helpers.message('Day - Date of birth should follow format YYYY-MM-DD');
+  if (dobArr[2]?.length != 2 || Number(dobArr) < 0) {
+    return helpers.message(
+      "Day - Date of birth should follow format YYYY-MM-DD"
+    );
   }
   return value;
 };
