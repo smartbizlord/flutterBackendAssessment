@@ -52,8 +52,8 @@ const geSingleAccount = async (accountNumber, include, exclude) => {
   return account;
 };
 
-const getAllAccounts = async (limit, page, include, exclude) => {
-  offset = page <= 0 ? 0 : (page - 1) * limit;
+const getAllAccounts = async (limit = 50, page = 1, include, exclude) => {
+  let offset = page <= 0 ? 0 : (page - 1) * limit;
   const result = await dB.accounts.findAndCountAll({
     limit,
     offset,
@@ -61,10 +61,10 @@ const getAllAccounts = async (limit, page, include, exclude) => {
   })
   let accounts = {};
   let totalPages = Math.ceil(result.count / limit);
-  userObj.dataCount = result.count;
-  userObj.page = page <= 0 ? 1 : page;
-  userObj.totalPages = totalPages;
-  userObj.userData = result.rows;
+  accounts.dataCount = result.count;
+  accounts.page = page <= 0 ? 1 : page;
+  accounts.totalPages = totalPages;
+  accounts.userData = result.rows;
   return accounts;
 };
 

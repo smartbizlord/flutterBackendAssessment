@@ -22,8 +22,10 @@ const getSingleAccount = catchAsync(async (req, res) => {
 });
 
 const getAllAccounts = catchAsync(async (req, res) => {
-  const page = pick(req.query, ['page']);
+  const page = pick(req.query, ['page']) || 1;
   const limit = pick(req.query, ['limit']) || 50;
+  console.log(page, "page")
+  console.log(limit, "limit")
   const result = await accountService.getAllAccounts( limit.limit, page.page, ['accountNumber', 'accountName', 'dateOfBirth', 'accountType', 'initialBalance'], ['createdAt', 'updatedAt']);
   res.status(httpStatus.OK).send(result)
 })

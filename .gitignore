@@ -2,3 +2,4 @@ node_modules/
 entities
 .env
 .space
+package-lock.json
